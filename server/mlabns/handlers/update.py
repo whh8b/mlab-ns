@@ -1,3 +1,4 @@
+# vim: ai ts=4 sw=4 expandtab
 from google.appengine.api import memcache
 from google.appengine.ext import db
 from google.appengine.ext import webapp
@@ -477,3 +478,7 @@ class StatusUpdateHandler(webapp.RequestHandler):
                   'tool_extra': tool_extra }
 
         return status
+
+class MaxmindUpdateHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.out.write("Latest version: %d<br>" % model.get_maxmind_latest_version())

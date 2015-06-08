@@ -103,6 +103,14 @@ class CountryCode(db.Model):
     longitude = db.FloatProperty()
     when = db.DateTimeProperty(auto_now=True)
 
+class MaxmindLatest(db.Model):
+    version = db.IntegerProperty()
+    when = db.DateTimeProperty(auto_now=True)
+
+class MaxmindConfiguration(db.Model):
+    url = db.StringProperty()
+    files = db.StringListProperty()
+
 class EncryptionKey(db.Model):
     """Key used to encrypt the communication with the RegistrationClient."""
     # Name of the key (by default is 'admin').
@@ -176,3 +184,18 @@ def get_tool_from_tool_id(tool_id):
         return tool
     logging.info('Tool %s not found in data store.', tool_id)
     return None
+
+def get_maxmind_latest_version():
+    version = 0
+    version_gql = MaxmindLatest.gql("ORDER BY version DESC LIMIT 1")
+    # There should only be one, but just in case ...
+    for v in version_gql.run():
+        version = v.version
+    return version
+
+def get_maxmind_configuration():
+    configuration = None
+    configuration_gql = MaxmindConfiguration.gql("")
+    for c in configuration_gql.run():
+        configuration = c
+    return configuration
