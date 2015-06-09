@@ -1,4 +1,4 @@
-# vim: ai ts=4 sw=4 expandtab 
+# vim: ai ts=4 sw=4 expandtab
 from google.appengine.api import urlfetch
 from google.appengine.ext import db
 
@@ -68,13 +68,13 @@ class MaxMindUpdate(object):
                 StringIO.StringIO(self.raw_updates[f].getvalue()))
         # Now, check if all the zipped updates were
         # properly downloaded.
-        self.download_status = True 
+        self.download_status = True
         for f in self.zipped_updates:
             if f == None:
                 self.download_status = False
                 break
         return self.download_status
-   
+
     def validate_update(self):
         if self.download_status == None or self.download_status == False:
             return False
