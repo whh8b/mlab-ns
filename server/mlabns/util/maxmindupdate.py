@@ -112,14 +112,18 @@ class MaxMindUpdate(object):
         self.raw_updates = []
         return True
 
-    def open(filename):
-        pass
+    def open(self, filename):
+        for f in self.unzipped_updates:
+            if (re.match(".*%s.*" % filename, f)):
+                logging.warning("opening %s\n" % str(self.unzipped_updates[f]))
+                return self.unzipped_updates[f]
+        return None
 
     def _download_update_file_md5(self, url, f):
         try:
             downloaded_md5 = urlfetch.fetch(url + "/" + f + ".md5")
             logging.warning("downloaded hash: %s" % str(downloaded_md5.content))
-            return downloaded_md5.content 
+            return downloaded_md5.content
         except Exception as e:
             logging.error("ERROR: Could not download Maxmind MD5: %s", str(e))
             return ""
