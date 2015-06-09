@@ -73,13 +73,9 @@ class MaxMindUpdate(object):
                 self.validated_status = False
                 break
 
-        # We can clear out the memory now
-        # because we will return self.validated_status
-        # from here on out when we call this
-        # method.
-        for f in self.raw_updates:
-            self.raw_updates[f].close()
-        self.raw_updates = []
+        # We cannot clear the raw memory yet.
+        # We will need it to unzip the objects.
+        # See below for the reason why.
         return self.validated_status
 
     def unzip_update(self):
@@ -94,14 +90,26 @@ class MaxMindUpdate(object):
         for f, zf in self.zipped_updates.items():
             for n in zf.namelist():
                 self.unzipped_updates[n] = f
-        logging.warning("archive members:%s"%str(self.unzipped_updates.keys()))
+        #logging.warning("archive members:%s"%str(self.unzipped_updates.items()))
 
         # Second, actually unzip them.
         for f in self.unzipped_updates:
+            # This many reconstructions is necessary because
+            #https://docs.python.org/2/library/zipfile.html#zipfile.ZipFile.open
+            # (second Note)
             self.unzipped_updates[f] =\
-                self.zipped_updates[self.unzipped_updates[f]].open(f)
+                zipfile.ZipFile(\
+                    StringIO.StringIO(\
+                        self.raw_updates[self.unzipped_updates[f]].getvalue()\
+                        )\
+                    )\
+                .open(f)
         logging.warning("archive members:%s"%str(self.unzipped_updates.items()))
 
+        # NOW, we can really clear out the raw contents.
+        for f in self.raw_updates:
+            self.raw_updates[f].close()
+        self.raw_updates = []
         return True
 
     def open(filename):
