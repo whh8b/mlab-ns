@@ -13,6 +13,29 @@ import string
 import StringIO
 import hashlib
 import zipfile
+import re
+import csv
+
+class MaxMindUpdateParser(object):
+    def __init__(self, data, model):
+        self.reader = csv.DictReader(data)
+        self.model = model
+        self.models = None
+        self.parsed = None
+
+    def parse(self):
+        if self.parsed != None:
+            if self.parsed == True:
+                return self.models
+            else:
+                return False
+
+        self.models = []
+        self.parsed = True
+        for row in self.reader:
+            logging.warning("row: %s\n" % str(row))
+            break
+        return self.parsed
 
 class MaxMindUpdate(object):
     def __init__(self,configuration):
