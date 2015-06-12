@@ -114,5 +114,35 @@ class MaxMindUpdateTestParsing(MaxMindUpdateCommon):
         blocks_csv_parser = maxmindupdate.MaxMindUpdateParser(blocks_csv, model.MaxmindCityBlock)
         self.assertEqual(True, blocks_csv_parser.parse())
 
+class MaxMindUpdateCreateCityBlock(unittest.TestCase):
+    def MaxmindCityBlockEqual(self, a, b, msg=None):
+        if a.start_ip_num != b.start_ip_num:
+            raise(self.failureException(
+                "start_ip_nums (%s/%s) do not match." %
+                (a.start_ip_num, b.start_ip_num)))
+        if a.end_ip_num != b.end_ip_num:
+            raise(self.failureException(
+                "end_ip_nums (%s/%s) do not match." %
+                (a.end_ip_num, b.end_ip_num)))
+        if a.location_id != b.location_id:
+            raise(self.failureException(
+                "location_ids (%s/%s) do not match." %
+                (a.location_id, b.location_id)))
+
+    def setUp(self):
+        self.addTypeEqualityFunc(
+            model.MaxmindCityBlock,
+            self.MaxmindCityBlockEqual)
+
+    def testCreateCityBlock(self):
+        truth = model.MaxmindCityBlock(
+            start_ip_num = 16777472,
+            end_ip_num = 16777472+255,
+            location_id="a")
+        question = maxmindupdate.MaxMindUpdateCreateCityBlock(
+            network="1.0.1.0/24",
+            geoname_id="a")
+        self.assertEqual(truth, question)
+
 if __name__ == '__main__':
     unittest2.main()

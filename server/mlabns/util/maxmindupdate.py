@@ -15,6 +15,21 @@ import hashlib
 import zipfile
 import re
 import csv
+import struct
+import socket
+
+def MaxMindUpdateCreateCityBlock(network, geoname_id, **kargs):
+    network, mask = network.split("/")
+    total_hosts = 2**(32-int(mask)) - 1
+    logging.error("network: %s" % network)
+    net_start = struct.unpack("! L",socket.inet_aton(network))[0]
+    net_end = net_start + int(total_hosts)
+    logging.error("net_start: %s" % net_start)
+    logging.error("net_end: %s" % net_end)
+    return model.MaxmindCityBlock(
+        start_ip_num = net_start,
+        end_ip_num = net_end,
+        location_id = geoname_id)
 
 class MaxMindUpdateParser(object):
     def __init__(self, data, model):
@@ -33,8 +48,12 @@ class MaxMindUpdateParser(object):
         self.models = []
         self.parsed = True
         for row in self.reader:
-            logging.warning("row: %s\n" % str(row))
-            break
+            modeled_object = None
+            if self.model == model.MaxmindCityBlock:
+                logging.warning("Creating: %s\n" % str(self.model))
+                modeled_object = MaxMindUpdateCreateCityBlock(**row)
+            if modeled_object != None:
+                self.models.append(modeled_object)
         return self.parsed
 
 class MaxMindUpdate(object):
