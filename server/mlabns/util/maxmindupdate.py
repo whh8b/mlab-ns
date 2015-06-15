@@ -22,7 +22,7 @@ class MaxMindUpdate(object):
         self.raw_updates = None
         self.unzipped_updates = None
         self.download_status = None
-
+        self.unzipped_status = None
         self.validated_status = None
 
         self.download_count = 0
@@ -73,6 +73,7 @@ class MaxMindUpdate(object):
         # TODO: There might be an easier way to do this.
         for f in files:
             hash = hashlib.new("md5")
+            self.raw_updates[f].seek(0)
             for i in self.raw_updates[f]:
                 hash.update(i)
             logging.warning("calculated hash: %s" % str(hash.hexdigest()))
@@ -86,9 +87,13 @@ class MaxMindUpdate(object):
         return self.validated_status
 
     def unzip_update(self):
+        if self.unzipped_updates != None:
+            return self.unzipped_status
+
         if self.zipped_updates == None:
             return False
 
+        self.unzip_count += 1
         self.unzipped_updates = {}
         # First, make a dictionary whose
         # keys are archive member names.

@@ -98,7 +98,13 @@ class MaxMindUpdateTestUnzipAndValidate(MaxMindUpdateCommon):
         self.assertEqual(count, self.update_object.validate_count)
 
     def testMaxMindUpdateUnzipUpdate(self):
+        count = self.update_object.unzip_count
         self.assertEqual(True, self.update_object.unzip_update())
+        self.assertNotEqual(count, self.update_object.unzip_count)
+
+        count = self.update_object.unzip_count
+        self.assertEqual(True, self.update_object.unzip_update())
+        self.assertEqual(count, self.update_object.unzip_count)
 
 if __name__ == '__main__':
     unittest2.main()
