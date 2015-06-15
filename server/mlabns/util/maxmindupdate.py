@@ -40,9 +40,10 @@ class MaxMindUpdate(object):
             # the zipfile.ZipFile constructor changes
             # the state of the object and it causes problems
             # when we validate.
-            self.zipped_updates[f] =\
-                zipfile.ZipFile(\
+            self.zipped_updates[f] = (
+                zipfile.ZipFile(
                 StringIO.StringIO(self.raw_updates[f].getvalue()))
+                )
         # Now, check if all the zipped updates were
         # properly downloaded.
         self.download_status = True 
@@ -97,13 +98,12 @@ class MaxMindUpdate(object):
             # This many reconstructions is necessary because
             #https://docs.python.org/2/library/zipfile.html#zipfile.ZipFile.open
             # (second Note)
-            self.unzipped_updates[f] =\
-                zipfile.ZipFile(\
-                    StringIO.StringIO(\
-                        self.raw_updates[self.unzipped_updates[f]].getvalue()\
-                        )\
-                    )\
-                .open(f)
+            self.unzipped_updates[f] =(
+                zipfile.ZipFile(
+                    StringIO.StringIO(
+                        self.raw_updates[self.unzipped_updates[f]].getvalue()
+                        ))
+                    ).open(f)
         logging.warning("archive members:%s"%str(self.unzipped_updates.items()))
 
         # NOW, we can really clear out the raw contents.

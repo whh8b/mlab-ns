@@ -13,6 +13,8 @@ from mlabns.util import maxmindupdate
 from google.appengine.ext import testbed
 from google.appengine.ext import db
 
+want_local_configuration = True
+
 class MaxMindUpdateCommon(unittest.TestCase):
     def setUp(self):
         self.testbed = testbed.Testbed()
@@ -25,19 +27,20 @@ class MaxMindUpdateCommon(unittest.TestCase):
         self.testbed.deactivate()
 
     def createSuccessfulConfiguration(self):
-        self.configuration =\
-            model.MaxmindConfiguration(url="http://geolite.maxmind.com/download/geoip/database", files=["GeoLite2-City-CSV.zip", "GeoLite2-Country-CSV.zip"])
+        if want_local_configuration == True:
+            self.configuration = model.MaxmindConfiguration(
+                url="http://localhost/",
+                files=["GeoLite2-City-CSV.zip", "GeoLite2-Country-CSV.zip"])
+        else:
+            self.configuration = model.MaxmindConfiguration(
+                url="http://geolite.maxmind.com/download/geoip/database",
+                files=["GeoLite2-City-CSV.zip", "GeoLite2-Country-CSV.zip"])
         self.configuration.put()
-
-    def createSuccessfulLocalConfiguration(self):
-        self.configuration =\
-            model.MaxmindConfiguration(url="http://localhost/", files=["GeoLite2-City-CSV.zip", "GeoLite2-Country-CSV.zip"])
-        self.configuration.put()
-
 
     def createFailureConfiguration(self):
-        self.configuration =\
-            model.MaxmindConfiguration(url="url", files=["f1", "f2"])
+        self.configuration = model.MaxmindConfiguration(
+            url="url",
+            files=["f1", "f2"])
         self.configuration.put()
 
     def createMaxMindUpdateObject(self):
@@ -46,8 +49,9 @@ class MaxMindUpdateCommon(unittest.TestCase):
 class MaxmindConfigurationTest(MaxMindUpdateCommon):
     def setUp(self):
         super(MaxmindConfigurationTest, self).setUp()
-        self.configuration = \
-            model.MaxmindConfiguration(url="url", files=["f1", "f2"])
+        self.configuration = model.MaxmindConfiguration(
+            url="url",
+            files=["f1", "f2"])
         self.configuration.put()
 
     def testGetMaxmindConfiguration(self):
@@ -62,21 +66,19 @@ class MaxMindDownloadUpdateTest(MaxMindUpdateCommon):
         self.createSuccessfulConfiguration()
         self.createMaxMindUpdateObject()
     
+    def testMaxMindDownloadUpdate(self):
+        self.assertEqual(True, self.update_object.download_update())
+
     # TODO: Make this meaningfully test what it
     # says it does.
-    def testMaxMindDownloadUpdate(self):
-        self.assertEqual(True,True)
-        #self.assertEqual(True, self.update_object.download_update())
-
     def testMaxMindPreDownloadUpdate(self):
-        self.assertEqual(True,True)
-        #self.assertEqual(True, self.update_object.download_update())
+        self.assertEqual(True, self.update_object.download_update())
+        self.assertEqual(True, self.update_object.download_update())
 
 class MaxMindUpdateTestUnzipAndValidate(MaxMindUpdateCommon):
     def setUp(self):
         super(MaxMindUpdateTestUnzipAndValidate, self).setUp()
         self.createSuccessfulConfiguration()
-        #self.createSuccessfulLocalConfiguration()
         self.createMaxMindUpdateObject()
         self.update_object.download_update()
 
