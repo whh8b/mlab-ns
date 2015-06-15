@@ -29,6 +29,12 @@ class MaxMindUpdateCommon(unittest.TestCase):
             model.MaxmindConfiguration(url="http://geolite.maxmind.com/download/geoip/database", files=["GeoLite2-City-CSV.zip", "GeoLite2-Country-CSV.zip"])
         self.configuration.put()
 
+    def createSuccessfulLocalConfiguration(self):
+        self.configuration =\
+            model.MaxmindConfiguration(url="http://localhost/", files=["GeoLite2-City-CSV.zip", "GeoLite2-Country-CSV.zip"])
+        self.configuration.put()
+
+
     def createFailureConfiguration(self):
         self.configuration =\
             model.MaxmindConfiguration(url="url", files=["f1", "f2"])
@@ -56,21 +62,33 @@ class MaxMindDownloadUpdateTest(MaxMindUpdateCommon):
         self.createSuccessfulConfiguration()
         self.createMaxMindUpdateObject()
     
+    # TODO: Make this meaningfully test what it
+    # says it does.
     def testMaxMindDownloadUpdate(self):
         self.assertEqual(True,True)
         #self.assertEqual(True, self.update_object.download_update())
 
-class MaxMindUpdateTest(MaxMindUpdateCommon):
+    def testMaxMindPreDownloadUpdate(self):
+        self.assertEqual(True,True)
+        #self.assertEqual(True, self.update_object.download_update())
+
+class MaxMindUpdateTestUnzipAndValidate(MaxMindUpdateCommon):
     def setUp(self):
-        super(MaxMindUpdateTest, self).setUp()
+        super(MaxMindUpdateTestUnzipAndValidate, self).setUp()
         self.createSuccessfulConfiguration()
+        #self.createSuccessfulLocalConfiguration()
         self.createMaxMindUpdateObject()
-        self.update_object.download_update()
         self.update_object.download_update()
 
     def testMaxMindValidateUpdate(self):
         self.assertEqual(True, self.update_object.validate_update())
+
+    # TODO: Make this meaningfully test what it
+    # says it does.
+    def testMaxMindPreValidateUpdate(self):
         self.assertEqual(True, self.update_object.validate_update())
+        self.assertEqual(True, self.update_object.validate_update())
+
     def testMaxMindUpdateUnzipUpdate(self):
         self.assertEqual(True, self.update_object.unzip_update())
 
