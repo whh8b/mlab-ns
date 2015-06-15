@@ -69,11 +69,14 @@ class MaxMindDownloadUpdateTest(MaxMindUpdateCommon):
     def testMaxMindDownloadUpdate(self):
         self.assertEqual(True, self.update_object.download_update())
 
-    # TODO: Make this meaningfully test what it
-    # says it does.
     def testMaxMindPreDownloadUpdate(self):
+        count = self.update_object.download_count
         self.assertEqual(True, self.update_object.download_update())
+        self.assertNotEqual(count, self.update_object.download_count)
+
+        count = self.update_object.download_count
         self.assertEqual(True, self.update_object.download_update())
+        self.assertEqual(count, self.update_object.download_count)
 
 class MaxMindUpdateTestUnzipAndValidate(MaxMindUpdateCommon):
     def setUp(self):
@@ -85,11 +88,14 @@ class MaxMindUpdateTestUnzipAndValidate(MaxMindUpdateCommon):
     def testMaxMindValidateUpdate(self):
         self.assertEqual(True, self.update_object.validate_update())
 
-    # TODO: Make this meaningfully test what it
-    # says it does.
     def testMaxMindPreValidateUpdate(self):
+        count = self.update_object.validate_count
         self.assertEqual(True, self.update_object.validate_update())
+        self.assertNotEqual(count, self.update_object.validate_count)
+
+        count = self.update_object.validate_count
         self.assertEqual(True, self.update_object.validate_update())
+        self.assertEqual(count, self.update_object.validate_count)
 
     def testMaxMindUpdateUnzipUpdate(self):
         self.assertEqual(True, self.update_object.unzip_update())

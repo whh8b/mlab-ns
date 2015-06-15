@@ -25,11 +25,16 @@ class MaxMindUpdate(object):
 
         self.validated_status = None
 
+        self.download_count = 0
+        self.unzip_count = 0
+        self.validate_count = 0
+
     def download_update(self):
         if self.download_status != None:
             logging.warning("Predownloaded; returning early")
             return self.download_status
 
+        self.download_count += 1
         url = self.configuration.url
         files = self.configuration.files
         self.zipped_updates = {}
@@ -60,6 +65,7 @@ class MaxMindUpdate(object):
             logging.warning("Pre validated; returning early.")
             return self.validated_status
 
+        self.validate_count += 1
         url = self.configuration.url
         files = self.configuration.files
         self.validated_status = True
