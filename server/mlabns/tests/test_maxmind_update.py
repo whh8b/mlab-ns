@@ -92,5 +92,27 @@ class MaxMindUpdateTestUnzipAndValidate(MaxMindUpdateCommon):
     def testMaxMindUpdateUnzipUpdate(self):
         self.assertEqual(True, self.update_object.unzip_update())
 
+class MaxMindUpdateTestParsing(MaxMindUpdateCommon):
+    def setUp(self):
+        super(MaxMindUpdateTestParsing, self).setUp()
+        self.createSuccessfulConfiguration()
+        #self.createSuccessfulLocalConfiguration()
+        self.createMaxMindUpdateObject()
+        self.update_object.download_update()
+        self.update_object.download_update()
+        self.update_object.unzip_update()
+
+    # TODO: document why this is here.
+    def testMaxMindUpdateOpenReturnsDifferentObjects(self):
+        self.assertNotEqual(
+            self.update_object.open("City-Blocks-IPv4"),
+            self.update_object.open("City-Blocks-IPv6"))
+
+    def testMaxMindParseBlocks(self):
+        blocks_csv = self.update_object.open("City-Blocks-IPv4")
+        self.assertNotEqual(None, blocks_csv)
+        blocks_csv_parser = maxmindupdate.MaxMindUpdateParser(blocks_csv, model.MaxmindCityBlock)
+        self.assertEqual(True, blocks_csv_parser.parse())
+
 if __name__ == '__main__':
     unittest2.main()
