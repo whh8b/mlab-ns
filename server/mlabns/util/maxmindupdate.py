@@ -115,8 +115,12 @@ class MaxMindUpdate(object):
         # NOW, we can really clear out the raw contents.
         for f in self.raw_updates:
             self.raw_updates[f].close()
-        self.raw_updates = []
-        return True
+        for f in self.zipped_updates:
+            self.zipped_updates[f].close()
+        self.raw_updates = None
+        self.zipped_updates = None
+        self.unzipped_status = True
+        return self.unzipped_status
 
     def open(self, filename):
         for f in self.unzipped_updates:
